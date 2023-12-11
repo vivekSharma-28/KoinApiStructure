@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity(),GoogleLogin.OnClientConnectedListener {
 
     lateinit var binding:ActivityMainBinding
     private val viewModel: MainViewModel by inject()
-    private lateinit var Login: GoogleLogin
+    private lateinit var plusLogin: GoogleLogin
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,15 +46,15 @@ class MainActivity : AppCompatActivity(),GoogleLogin.OnClientConnectedListener {
         }
 
         binding.confirmButton.setOnClickListener {
-            Login.signIn()
+            plusLogin.signIn()
         }
         googleInit()
 
     }
 
     fun googleInit(){
-        Login = GoogleLogin(this,null , this)
-        Login.mGoogleApiClient.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL)
+        plusLogin = GoogleLogin(this,null , this)
+        plusLogin.mGoogleApiClient.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL)
     }
 
 
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(),GoogleLogin.OnClientConnectedListener {
 
         Log.e("RequestCode", requestCode.toString())
         if (requestCode == GoogleLogin.RC_SIGN_IN) {
-            Login.onActivityResult(requestCode, resultCode, data!!)
+            plusLogin.onActivityResult(requestCode, resultCode, data!!)
         }
     }
 
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity(),GoogleLogin.OnClientConnectedListener {
             "onGoogleProfileFetchComplete: $id  $name  $email   $picURL  $gender"
         )
 
-        Login.signOut()
+        plusLogin.signOut()
     }
 
     override fun onClientFailed(msg: String?) {
