@@ -1,22 +1,26 @@
 package com.koinapistructure.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.common.api.GoogleApiClient
 import com.koinapistructure.Apirequest.Request
 import com.koinapistructure.databinding.ActivityMainBinding
+import com.koinapistructure.social_sign_in.GoogleLogin
 import com.koinapistructure.utils.DataStatus
 import com.koinapistructure.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),GoogleLogin.OnClientConnectedListener {
 
     lateinit var binding:ActivityMainBinding
     private val viewModel: MainViewModel by inject()
-//    private val adaptor by lazy { }
+    private lateinit var plusLogin: GoogleLogin
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,5 +45,48 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        binding.confirmButton.setOnClickListener {
+            plusLogin.signIn()
+        }
+        googleInit()
+
+    }
+
+    fun googleInit(){
+        plusLogin = GoogleLogin(this,null , this)
+        plusLogin.mGoogleApiClient.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL)
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        Log.e("RequestCode", requestCode.toString())
+        if (requestCode == GoogleLogin.RC_SIGN_IN) {
+            plusLogin.onActivityResult(requestCode, resultCode, data!!)
+        }
+    }
+
+
+    override fun onGoogleProfileFetchComplete(
+        id: String?,
+        name: String?,
+        email: String?,
+        picURL: String,
+        gender: String,
+        firstname: String,
+        lastname: String
+    ) {
+        Log.d(
+            "GOOGLE_SIGN_IN",
+            "onGoogleProfileFetchComplete: $id  $name  $email   $picURL  $gender"
+        )
+
+        plusLogin.signOut()
+    }
+
+    override fun onClientFailed(msg: String?) {
+        Log.d("GOOGLE_SIGN_IN", "${msg} ")
+        Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
     }
 }

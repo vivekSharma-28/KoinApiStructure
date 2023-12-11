@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "729639502211",
+    "project_id": "koinapistructure",
+    "storage_bucket": "koinapistructure.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:729639502211:android:0c670d1bbe95706257b6b6",
+        "android_client_info": {
+          "package_name": "com.koinapistructure"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "729639502211-p2hkft7n9trefr2bj078q391fkrno68v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.koinapistructure",
+            "certificate_hash": "3ac97db39b86379941068d2ff57529b8c39f0b3b"
+          }
+        },
+        {
+          "client_id": "729639502211-lb817p78tmuv5ulv1am4k3gq2e9id5mm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcJdTVGXiHq-khXol8r8PEn8QNA4FL2J0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "729639502211-lb817p78tmuv5ulv1am4k3gq2e9id5mm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
