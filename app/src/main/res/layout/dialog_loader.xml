@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.sn.lib.NestedProgress
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mkl"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:innerAnimInterpolator="linear"
+    app:innerLoaderColor="@color/black"
+    app:outerLoaderColor="@color/black"
+    app:outerAnimInterpolator="overshoot"
+    app:outerLoaderAnimDuration="1500" />
+
+
+

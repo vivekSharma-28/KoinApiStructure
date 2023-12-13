@@ -37,6 +37,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        dataBinding = true
     }
 }
 
@@ -67,5 +68,13 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.1")
 
+    //Loader
+    implementation("com.github.emreesen27:Android-Nested-Progress:v1.0.2")
+
+    //Permission X
+    implementation("com.guolindev.permissionx:permissionx:1.7.1")
+
+    //Glide
+    implementation("com.github.bumptech.glide:glide:4.14.2")
 
 }

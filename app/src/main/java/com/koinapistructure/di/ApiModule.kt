@@ -1,5 +1,6 @@
 package com.koinapistructure.di
 
+import com.braintechnosys.qickjob.utils.Loading
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.koinapistructure.api.Api
@@ -59,4 +60,5 @@ val ApiModule= module {
     single { provideGson() }
     single { provideOkHTTPClient() }
     single { provideRetrofit(get(),get(),get()) }
+    single { Loading() }
 }

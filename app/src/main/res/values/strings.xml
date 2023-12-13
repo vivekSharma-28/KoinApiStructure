@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">KoinApiStructure</string>
+    <string name="are_you_sure_you_want_to_logout_the_app">Are you sure you want to logout the app?</string>
+    <string name="to_check_your_approval_status_you_need_to_login_again">To check your approval status you need to login again.</string>
+    <string name="are_you_sure_you_want_to_continue">Are you sure you want to Continue</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="are_you_sure_you_want_to_logout">Are You Sure You Want To LogOut</string>
+
 </resources>
