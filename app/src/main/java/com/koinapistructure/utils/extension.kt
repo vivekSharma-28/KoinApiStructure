@@ -19,6 +19,10 @@ import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.permissionx.guolindev.PermissionX
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import java.util.regex.Pattern
 import kotlin.math.acos
 import kotlin.math.cos
@@ -249,4 +253,11 @@ fun loadImageURL(imageView: AppCompatImageView, imageURL: String) {
 fun getCountryCode(context: Context): String {
     val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
     return tm.networkCountryIso
+}
+
+fun convertFormFileToMultipartBody(key: String, file: File?): MultipartBody.Part? = file?.let {
+    MultipartBody.Part.createFormData(
+        key, it.name, it.asRequestBody("image/*".toMediaTypeOrNull())
+    )
+
 }

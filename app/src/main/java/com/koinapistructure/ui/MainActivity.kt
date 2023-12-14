@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity(),GoogleLogin.OnClientConnectedListener {
         binding= ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         if(isConnected(this@MainActivity))
             toast("IS Connected")
 
@@ -87,18 +86,9 @@ class MainActivity : AppCompatActivity(),GoogleLogin.OnClientConnectedListener {
         }
     }
 
-    override fun onGoogleProfileFetchComplete(
-        id: String?,
-        name: String?,
-        email: String?,
-        picURL: String,
-        gender: String,
-        firstname: String,
-        lastname: String
-    ) {
+    override fun onGoogleProfileFetchComplete(id: String?, name: String?, email: String?, picURL: String, gender: String, firstname: String, lastname: String) {
         Log.d(
-            "GOOGLE_SIGN_IN",
-            "onGoogleProfileFetchComplete: $id  $name  $email   $picURL  $gender"
+            "GOOGLE_SIGN_IN", "onGoogleProfileFetchComplete: $id  $name  $email   $picURL  $gender"
         )
 
         plusLogin.signOut()

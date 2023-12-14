@@ -7,21 +7,22 @@ import androidx.lifecycle.viewModelScope
 import com.example.theweekin.modelClass.homepage.news_model
 import com.koinapistructure.Apirequest.Request
 import com.koinapistructure.repository.ApiRepository
+import com.koinapistructure.response.newsfeed.newsfeed
 import com.koinapistructure.utils.DataStatus
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val repository: ApiRepository) : ViewModel() {
 
-    private val mutableLiveData = MutableLiveData<DataStatus<Any>>()
-    val data: LiveData<DataStatus<Any>>
+    val mutableLiveData = MutableLiveData<DataStatus<newsfeed>>()
+    val data: LiveData<DataStatus<newsfeed>>
         get() = mutableLiveData
 
 
-    fun getData() = viewModelScope.launch {
-        repository.getData().collect {
-            mutableLiveData.value = it
-        }
-    }
+//    fun getData() = viewModelScope.launch {
+//        repository.getData().collect {
+//            mutableLiveData.value = it
+//        }
+//    }
 
     fun product(request: Request)=viewModelScope.launch {
         repository.getProduct(request).collect{
