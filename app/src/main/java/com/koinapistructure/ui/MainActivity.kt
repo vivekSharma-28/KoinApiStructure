@@ -20,9 +20,9 @@ import com.koinapistructure.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-class MainActivity : AppCompatActivity(),GoogleLogin.OnClientConnectedListener {
+class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener {
 
-    lateinit var binding:ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by inject()
     private val loading: Loading by inject()
     private lateinit var plusLogin: GoogleLogin
@@ -30,27 +30,28 @@ class MainActivity : AppCompatActivity(),GoogleLogin.OnClientConnectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding= ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if(isConnected(this@MainActivity))
-            toast("IS Connected")
+        if (isConnected(this@MainActivity)) toast("IS Connected")
 
 
-        val requestData= Request(category_id = 0, news_per_page = 10, page_no = 1)
+        val requestData = Request(category_id = 0, news_per_page = 10, page_no = 1)
         lifecycleScope.launch {
             viewModel.product(requestData)
-            viewModel.data.observe(this@MainActivity){
-                when(it.status){
-                    DataStatus.Status.LOADING->{
+            viewModel.data.observe(this@MainActivity) {
+                when (it.status) {
+                    DataStatus.Status.LOADING -> {
                         loading.show(this@MainActivity)
                     }
-                    DataStatus.Status.SUCCESS->{
+
+                    DataStatus.Status.SUCCESS -> {
                         loading.hide(this@MainActivity)
                         binding.products.text = it.data.toString()
                     }
-                    DataStatus.Status.ERROR->{
-                        Toast.makeText(this@MainActivity,it.message,Toast.LENGTH_LONG).show()
+
+                    DataStatus.Status.ERROR -> {
+                        Toast.makeText(this@MainActivity, it.message, Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -61,7 +62,7 @@ class MainActivity : AppCompatActivity(),GoogleLogin.OnClientConnectedListener {
         }
 
         binding.btLogout.setOnClickListener {
-            LogoutDialog(this,object :NewYesNoListener{
+            LogoutDialog(this, object : NewYesNoListener {
                 override fun onAffirmative() {
                     toast("LogOut Is Working Good")
                 }
@@ -71,8 +72,8 @@ class MainActivity : AppCompatActivity(),GoogleLogin.OnClientConnectedListener {
 
     }
 
-    fun googleInit(){
-        plusLogin = GoogleLogin(this,null , this)
+    fun googleInit() {
+        plusLogin = GoogleLogin(this, null, this)
         plusLogin.mGoogleApiClient.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL)
     }
 
@@ -86,7 +87,15 @@ class MainActivity : AppCompatActivity(),GoogleLogin.OnClientConnectedListener {
         }
     }
 
-    override fun onGoogleProfileFetchComplete(id: String?, name: String?, email: String?, picURL: String, gender: String, firstname: String, lastname: String) {
+    override fun onGoogleProfileFetchComplete(
+        id: String?,
+        name: String?,
+        email: String?,
+        picURL: String,
+        gender: String,
+        firstname: String,
+        lastname: String
+    ) {
         Log.d(
             "GOOGLE_SIGN_IN", "onGoogleProfileFetchComplete: $id  $name  $email   $picURL  $gender"
         )
