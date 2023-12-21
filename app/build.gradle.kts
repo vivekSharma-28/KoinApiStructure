@@ -57,6 +57,9 @@ dependencies {
     implementation ("com.google.android.gms:play-services-auth:20.7.0")
     implementation ("com.google.android.gms:play-services-plus:17.0.0")
 
+    //Hawk
+    implementation("com.orhanobut:hawk:2.0.1")
+
     //Koin
     implementation("io.insert-koin:koin-core:3.2.2")
     implementation("io.insert-koin:koin-android:3.2.2")
@@ -74,7 +77,21 @@ dependencies {
     //Permission X
     implementation("com.guolindev.permissionx:permissionx:1.7.1")
 
+    //Shimmer Effect
+    implementation ("com.facebook.shimmer:shimmer:0.5.0")
+
     //Glide
     implementation("com.github.bumptech.glide:glide:4.14.2")
+
+    //Navigation
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
+
+    //Camera
+    implementation("androidx.camera:camera-core:1.0.0-rc02")
+    implementation("androidx.camera:camera-camera2:1.0.0-rc02")
+    implementation("androidx.camera:camera-lifecycle:1.0.0-rc02")
+    implementation("androidx.camera:camera-view:1.4.0-alpha02")
+    implementation("androidx.camera:camera-extensions:1.4.0-alpha02")
 
 }
