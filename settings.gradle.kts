@@ -18,5 +18,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "KoinApiStructure"
-include(":app")
+include(":app", ":ucrop")
  

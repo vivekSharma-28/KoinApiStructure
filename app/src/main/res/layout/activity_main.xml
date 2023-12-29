@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/products"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -16,6 +16,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/confirm_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/confirm_button"
@@ -26,6 +35,14 @@
         app:layout_constraintTop_toBottomOf="@id/products" />
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/gallery_Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gallery Button"
+        app:layout_constraintBottom_toTopOf="@id/btLogout"
+        app:layout_constraintTop_toBottomOf="@id/confirm_button" />
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btLogout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,7 +50,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/confirm_button" />
-
+        app:layout_constraintTop_toBottomOf="@id/gallery_Button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

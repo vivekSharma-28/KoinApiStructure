@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.gms.google-services")
+    id("kotlin-kapt")
 }
 
 android {
@@ -93,5 +94,9 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.0.0-rc02")
     implementation("androidx.camera:camera-view:1.4.0-alpha02")
     implementation("androidx.camera:camera-extensions:1.4.0-alpha02")
+
+    implementation (project(":ucrop"))
+    implementation ("id.zelory:compressor:3.0.1")
+    implementation ("com.karumi:dexter:6.2.3")
 
 }

@@ -23,6 +23,9 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.acos
 import kotlin.math.cos
@@ -261,3 +264,5 @@ fun convertFormFileToMultipartBody(key: String, file: File?): MultipartBody.Part
     )
 
 }
+
+fun getCurrentDate(): String = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US).format(Date())
