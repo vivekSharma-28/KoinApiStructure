@@ -1,3 +1,5 @@
+import java.util.regex.Pattern.compile
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -30,11 +32,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         viewBinding = true
@@ -95,8 +97,23 @@ dependencies {
     implementation("androidx.camera:camera-view:1.4.0-alpha02")
     implementation("androidx.camera:camera-extensions:1.4.0-alpha02")
 
-    implementation (project(":ucrop"))
+    //Compressor
     implementation ("id.zelory:compressor:3.0.1")
+
+    //Permission
     implementation ("com.karumi:dexter:6.2.3")
 
+    //round Image
+    implementation ("com.makeramen:roundedimageview:2.3.0")
+
+    //Zoom In & Out Image
+    implementation ("com.github.Toxa2033:ScaleAndSwipeDismissImageView:v0.7")
+
+    //Pagination
+    compile("com.github.markomilos:paginate:1.0.0")
+
+
+    implementation (project(":ucrop"))
+    implementation (project(":bannerview"))
+    implementation (project(":indicator"))
 }

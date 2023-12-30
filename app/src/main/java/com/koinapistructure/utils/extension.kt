@@ -61,8 +61,8 @@ fun Activity.hideKeyboard() {
 fun AppCompatActivity.addFragment(fragment: Fragment, frameId: Int, addToStack: Boolean) {
     supportFragmentManager.inTransaction {
         if (addToStack) add(frameId, fragment, fragment.javaClass.simpleName).addToBackStack(
-                fragment.javaClass.simpleName
-            )
+            fragment.javaClass.simpleName
+        )
         else add(frameId, fragment)
     }
 }
@@ -88,8 +88,8 @@ fun AppCompatActivity.replaceFragment(
         }
 
         if (addToStack) replace(frameId, fragment, fragment.javaClass.simpleName).addToBackStack(
-                fragment.javaClass.simpleName
-            )
+            fragment.javaClass.simpleName
+        )
         else replace(frameId, fragment, fragment.javaClass.simpleName)
 
     }
@@ -262,7 +262,6 @@ fun convertFormFileToMultipartBody(key: String, file: File?): MultipartBody.Part
     MultipartBody.Part.createFormData(
         key, it.name, it.asRequestBody("image/*".toMediaTypeOrNull())
     )
-
 }
 
 fun getCurrentDate(): String = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US).format(Date())

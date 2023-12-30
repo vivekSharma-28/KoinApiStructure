@@ -3,6 +3,7 @@ package com.koinapistructure.ui
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.widget.ViewPager2
 import com.braintechnosys.qickjob.utils.Loading
 import com.bumptech.glide.Glide
 import com.google.android.gms.common.api.GoogleApiClient
@@ -21,12 +23,15 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.koinapistructure.Apirequest.Request
 import com.koinapistructure.R
+import com.koinapistructure.adapter.HomeViewPagerAdapter
 import com.koinapistructure.databinding.ActivityMainBinding
+import com.koinapistructure.response.ImageData
 import com.koinapistructure.social_sign_in.GoogleLogin
 import com.koinapistructure.utils.CameraGalleryDialog
 import com.koinapistructure.utils.CameraGalleryListener
 import com.koinapistructure.utils.Constant.REQUEST_GET_PHOTO
 import com.koinapistructure.utils.Constant.REQUEST_TAKE_PHOTO
+import com.koinapistructure.utils.Constant.imageData
 import com.koinapistructure.utils.DataStatus
 import com.koinapistructure.utils.FileUtils
 import com.koinapistructure.utils.LogoutDialog
@@ -36,6 +41,9 @@ import com.koinapistructure.utils.isConnected
 import com.koinapistructure.utils.toast
 import com.koinapistructure.viewmodel.MainViewModel
 import com.yalantis.ucrop.UCrop
+import com.zhpan.bannerview.BannerViewPager
+import com.zhpan.bannerview.indicator.DrawableIndicator
+import com.zhpan.bannerview.utils.BannerUtils
 import id.zelory.compressor.Compressor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -55,6 +63,7 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
     private lateinit var plusLogin: GoogleLogin
     private var mCurrentPhotoPath: String? = null
     private var uriTemp: Uri? = null
+    private lateinit var mViewPager: BannerViewPager<ImageData?>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +71,6 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         setContentView(binding.root)
 
         if (isConnected(this@MainActivity)) toast("IS Connected")
-
 
         val requestData = Request(category_id = 0, news_per_page = 10, page_no = 1)
         lifecycleScope.launch {
@@ -100,6 +108,9 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         binding.galleryButton.setOnClickListener {
             galleryCameraPermission()
         }
+
+        setUpAutoScrollViewPager(imageData())
+
         googleInit()
 
     }
@@ -144,8 +155,6 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
                 UCrop.REQUEST_CROP -> {
 
                     val resultUri = UCrop.getOutput(data!!)
-                    binding.products.visibility = View.GONE
-                    binding.image.visibility = View.VISIBLE
                     binding.image.setImageURI(resultUri)
 
                     val file = FileUtils.getFile(this@MainActivity, resultUri)
@@ -184,6 +193,38 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         )
 
         plusLogin.signOut()
+    }
+
+
+    private fun setUpAutoScrollViewPager(bannerList: List<ImageData?>) {
+
+        val indicatorview = DrawableIndicator(this@MainActivity)
+        indicatorview.setIndicatorDrawable(R.drawable.radio_selector, R.drawable.radio_selected_new)
+        indicatorview.setIndicatorSize(20, 20, 20, 20)
+        indicatorview.setIndicatorGap(20)
+
+        mViewPager = this@MainActivity.findViewById(R.id.viewpager_home)
+        mViewPager.apply {
+            setCanLoop(true)
+            setInterval(3000)
+            setIndicatorView(indicatorview)
+            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    BannerUtils.log("position:$position")
+//                    viewModel.imagePosition =(position + 1).toString()
+//                    viewModel.positionShow=viewModel.imagePosition + "/" + viewModel.imageTotalPosition
+                }
+            })
+
+            adapter = HomeViewPagerAdapter(
+                bannerList,
+                object : HomeViewPagerAdapter.OnSubViewClickListener2 {
+                    override fun click(position: Int) {
+                        //      ImageActivity.open(this@PropertyDetailsActivity, viewModel?.selectedPhotoslist)
+                    }
+                })
+        }.create(bannerList)
+
     }
 
     override fun onClientFailed(msg: String?) {
