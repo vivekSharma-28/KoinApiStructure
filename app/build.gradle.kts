@@ -113,6 +113,11 @@ dependencies {
     //Pagination
     compile("com.github.markomilos:paginate:1.0.0")
 
+    //Country Code Picker
+    implementation ("com.github.Ajinkrishnak:CountryCodePicker:1.0.2")
+
+    //OTP View
+    implementation ("com.github.poovamraj:PinEditTextField:1.2.6")
 
     implementation (project(":ucrop"))
     implementation (project(":bannerview"))

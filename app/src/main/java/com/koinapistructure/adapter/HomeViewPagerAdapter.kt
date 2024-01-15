@@ -28,7 +28,7 @@ class HomeViewPagerAdapter(var banner: List<ImageData?>?, var listnerer: OnSubVi
         }
 
 
-        var bannerdata = banner?.get(position)?.value
+        val bannerdata = banner?.get(position)?.value
 
         Glide.with(imageStart.context).load(bannerdata)
             .placeholder(R.drawable.ic_launcher_background).into(imageStart)

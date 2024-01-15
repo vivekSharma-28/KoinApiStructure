@@ -4,14 +4,15 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.database.Cursor
-import android.media.Image
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
-import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -19,9 +20,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.braintechnosys.qickjob.utils.Loading
-import com.bumptech.glide.Glide
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.gson.Gson
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -40,6 +39,7 @@ import com.koinapistructure.utils.Constant.REQUEST_TAKE_PHOTO
 import com.koinapistructure.utils.Constant.imageData
 import com.koinapistructure.utils.DataStatus
 import com.koinapistructure.utils.FileUtils
+import com.koinapistructure.utils.LocalHelper
 import com.koinapistructure.utils.LogoutDialog
 import com.koinapistructure.utils.NewYesNoListener
 import com.koinapistructure.utils.PDFWORDDialog
@@ -48,6 +48,7 @@ import com.koinapistructure.utils.getCurrentDate
 import com.koinapistructure.utils.isConnected
 import com.koinapistructure.utils.toast
 import com.koinapistructure.viewmodel.MainViewModel
+import com.poovam.pinedittextfield.PinField
 import com.yalantis.ucrop.UCrop
 import com.zhpan.bannerview.BannerViewPager
 import com.zhpan.bannerview.indicator.DrawableIndicator
@@ -63,7 +64,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener {
+
+class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener{
 
     lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by inject()
@@ -80,9 +82,13 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+        LocalHelper.setLocale(this@MainActivity,"en")
+
         if (isConnected(this@MainActivity)) toast("IS Connected")
 
         val requestData = Request(category_id = 0, news_per_page = 10, page_no = 1)
+
         lifecycleScope.launch {
             viewModel.product(requestData)
             viewModel.data.observe(this@MainActivity) {
@@ -123,10 +129,36 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             pdfWordPermission()
         }
 
+
+        binding.otpField.setOnEditorActionListener{v, actionId, event ->
+            when(actionId){
+                    EditorInfo.IME_ACTION_DONE-> otpData()
+            }
+            true
+        }
+
+        binding.phoneNumber.setOnEditorActionListener { v, actionId, event ->
+            when(actionId){
+                EditorInfo.IME_ACTION_NEXT->getData()
+            }
+            true
+        }
+
         setUpAutoScrollViewPager(imageData())
 
         googleInit()
 
+    }
+
+    private fun getData() {
+        val code=binding.ccpPhone.selectedCountryCode()
+        val phoneNumber=binding.phoneNumber.text.toString()
+        toast(code+phoneNumber)
+    }
+
+    private fun otpData(){
+        val otp=binding.otpField.text.toString()
+        toast("This is the OTP $otp")
     }
 
     private fun googleInit() {

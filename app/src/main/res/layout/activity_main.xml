@@ -5,19 +5,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ui.MainActivity">
 
     <LinearLayout
         android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_margin="@dimen/_5sdp"
         android:orientation="vertical"
         android:weightSum="3"
-        app:layout_constraintBottom_toTopOf="@id/confirm_button"
+        app:layout_constraintBottom_toTopOf="@id/ccp_phoneLL"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/products"
@@ -37,6 +38,72 @@
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ccp_phoneLL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_5sdp"
+        app:layout_constraintBottom_toTopOf="@id/opt_LL"
+        app:layout_constraintEnd_toEndOf="@+id/layout"
+        app:layout_constraintStart_toStartOf="@+id/layout"
+        app:layout_constraintTop_toBottomOf="@id/layout">
+
+        <com.ak.ui.CountryCodePicker
+            android:id="@+id/ccp_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            app:arrowSize="@dimen/_20sdp"
+            app:contentColor="@color/black"
+            app:defaultNameCode="in"
+            app:excludedCountries="ad,ae"
+            app:fontFamily="@font/montserrat_medium"
+            app:showArrowDown="true"
+            app:showFlag="true"
+            app:showNameCode="false"
+            app:textSize="@dimen/_12ssp" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/phone_Number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:singleLine="true"
+            android:layout_margin="@dimen/_5sdp"
+            android:inputType="number" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/opt_LL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_5sdp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@id/confirm_button"
+        app:layout_constraintEnd_toEndOf="@id/ccp_phoneLL"
+        app:layout_constraintStart_toStartOf="@id/ccp_phoneLL"
+        app:layout_constraintTop_toBottomOf="@id/ccp_phoneLL">
+
+        <com.poovam.pinedittextfield.LinePinField
+            android:id="@+id/otp_Field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:inputType="number"
+            android:textSelectHandle="@drawable/text_handle"
+            android:textSize="16sp"
+            app:bottomTextPaddingDp="15dp"
+            app:distanceInBetween="10dp"
+            app:fieldColor="#D50000"
+            app:highlightColor="#43A047"
+            app:highlightType="allFields"
+            app:isCursorEnabled="true"
+            app:isCustomBackground="true"
+            app:lineThickness="2dp"
+            app:noOfFields="6" />
 
     </LinearLayout>
 
@@ -45,8 +112,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Google Login"
-        app:layout_constraintBottom_toTopOf="@id/btLogout"
-        app:layout_constraintTop_toBottomOf="@id/layout" />
+        app:layout_constraintBottom_toTopOf="@+id/gallery_Button"
+        app:layout_constraintTop_toBottomOf="@id/opt_LL" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/gallery_Button"
@@ -69,9 +136,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="LogOut"
-        app:layout_constraintTop_toBottomOf="@id/pdf_word_Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pdf_word_Button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
