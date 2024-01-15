@@ -9,8 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
@@ -48,7 +46,7 @@ import com.koinapistructure.utils.getCurrentDate
 import com.koinapistructure.utils.isConnected
 import com.koinapistructure.utils.toast
 import com.koinapistructure.viewmodel.MainViewModel
-import com.poovam.pinedittextfield.PinField
+import com.stfalcon.smsverifycatcher.SmsVerifyCatcher
 import com.yalantis.ucrop.UCrop
 import com.zhpan.bannerview.BannerViewPager
 import com.zhpan.bannerview.indicator.DrawableIndicator
@@ -65,7 +63,7 @@ import java.util.Date
 import java.util.Locale
 
 
-class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener{
+class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener {
 
     lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by inject()
@@ -74,6 +72,7 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener{
     private var mCurrentPhotoPath: String? = null
     private var uriTemp: Uri? = null
     private var doctype: Int? = null
+    private lateinit var smsVerifyCatcher: SmsVerifyCatcher
     private lateinit var mViewPager: BannerViewPager<ImageData?>
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -82,10 +81,9 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener{
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        LocalHelper.setLocale(this@MainActivity, "en")
 
-        LocalHelper.setLocale(this@MainActivity,"en")
-
-        if (isConnected(this@MainActivity)) toast("IS Connected")
+        if (isConnected(this@MainActivity)) toast("Is Connected")
 
         val requestData = Request(category_id = 0, news_per_page = 10, page_no = 1)
 
@@ -129,19 +127,22 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener{
             pdfWordPermission()
         }
 
-
-        binding.otpField.setOnEditorActionListener{v, actionId, event ->
-            when(actionId){
-                    EditorInfo.IME_ACTION_DONE-> otpData()
+        binding.otpField.setOnEditorActionListener { v, actionId, event ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE -> otpData()
             }
             true
         }
 
         binding.phoneNumber.setOnEditorActionListener { v, actionId, event ->
-            when(actionId){
-                EditorInfo.IME_ACTION_NEXT->getData()
+            when (actionId) {
+                EditorInfo.IME_ACTION_NEXT -> getData()
             }
             true
+        }
+
+        smsVerifyCatcher = SmsVerifyCatcher(this@MainActivity) { message ->
+            toast("This is the code $message")
         }
 
         setUpAutoScrollViewPager(imageData())
@@ -151,13 +152,13 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener{
     }
 
     private fun getData() {
-        val code=binding.ccpPhone.selectedCountryCode()
-        val phoneNumber=binding.phoneNumber.text.toString()
-        toast(code+phoneNumber)
+        val code = binding.ccpPhone.selectedCountryCode()
+        val phoneNumber = binding.phoneNumber.text.toString()
+        toast(code + phoneNumber)
     }
 
-    private fun otpData(){
-        val otp=binding.otpField.text.toString()
+    private fun otpData() {
+        val otp = binding.otpField.text.toString()
         toast("This is the OTP $otp")
     }
 
@@ -325,9 +326,11 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener{
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun pdfWordPermission(){
+    private fun pdfWordPermission() {
         Dexter.withContext(this@MainActivity).withPermissions(
-            Manifest.permission.READ_MEDIA_VIDEO,Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.READ_MEDIA_VIDEO,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
         ).withListener(object : MultiplePermissionsListener {
             override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
                 openPopUp()
@@ -375,21 +378,20 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener{
     }
 
     private fun openPopUp() {
-        PDFWORDDialog(this,
-            object : WordPDFListener {
+        PDFWORDDialog(this, object : WordPDFListener {
 
-                override fun onWORDClicked() {
-                    openDocumentPickerWORD()
-                    //  viewModel.logotype = 1
-                    doctype = 1
-                }
+            override fun onWORDClicked() {
+                openDocumentPickerWORD()
+                //  viewModel.logotype = 1
+                doctype = 1
+            }
 
-                override fun onPDFClicked() {
-                    openDocumentPickerPDF()
-                    //  viewModel.logotype = 0
-                    doctype = 2
-                }
-            }).show()
+            override fun onPDFClicked() {
+                openDocumentPickerPDF()
+                //  viewModel.logotype = 0
+                doctype = 2
+            }
+        }).show()
     }
 
     private fun openDocumentPickerPDF() {
@@ -461,5 +463,15 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener{
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.absolutePath
         return image
+    }
+
+    override fun onStart() {
+        super.onStart()
+        smsVerifyCatcher.onStart()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        smsVerifyCatcher.onStop()
     }
 }

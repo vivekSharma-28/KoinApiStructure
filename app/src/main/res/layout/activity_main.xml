@@ -74,6 +74,7 @@
             android:singleLine="true"
             android:layout_margin="@dimen/_5sdp"
             android:inputType="number" />
+
     </LinearLayout>
 
     <LinearLayout

@@ -119,6 +119,9 @@ dependencies {
     //OTP View
     implementation ("com.github.poovamraj:PinEditTextField:1.2.6")
 
+    //SMS Verification Picker
+    implementation ("com.github.stfalcon-studio:SmsVerifyCatcher:0.3.3")
+
     implementation (project(":ucrop"))
     implementation (project(":bannerview"))
     implementation (project(":indicator"))
