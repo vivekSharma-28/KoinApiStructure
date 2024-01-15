@@ -7,6 +7,9 @@ object Constant {
     const val baseURL = "https://theweekin.co.uk/api/cms/"
     const val REQUEST_GET_PHOTO = 2
     const val REQUEST_TAKE_PHOTO = 1
+    const val PICK_UP_POINT = 1
+    const val OPEN_DOCUMENT_REQUEST_CODE = 2244
+
 
     fun imageData(): ArrayList<ImageData> {
         val parking_image = ArrayList<ImageData>()
@@ -31,3 +34,4 @@ object Constant {
         return parking_image
     }
 }
+

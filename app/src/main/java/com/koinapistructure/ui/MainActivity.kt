@@ -3,13 +3,17 @@ package com.koinapistructure.ui
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.database.Cursor
 import android.media.Image
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
@@ -17,6 +21,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.braintechnosys.qickjob.utils.Loading
 import com.bumptech.glide.Glide
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.gson.Gson
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -29,6 +34,7 @@ import com.koinapistructure.response.ImageData
 import com.koinapistructure.social_sign_in.GoogleLogin
 import com.koinapistructure.utils.CameraGalleryDialog
 import com.koinapistructure.utils.CameraGalleryListener
+import com.koinapistructure.utils.Constant.OPEN_DOCUMENT_REQUEST_CODE
 import com.koinapistructure.utils.Constant.REQUEST_GET_PHOTO
 import com.koinapistructure.utils.Constant.REQUEST_TAKE_PHOTO
 import com.koinapistructure.utils.Constant.imageData
@@ -36,6 +42,8 @@ import com.koinapistructure.utils.DataStatus
 import com.koinapistructure.utils.FileUtils
 import com.koinapistructure.utils.LogoutDialog
 import com.koinapistructure.utils.NewYesNoListener
+import com.koinapistructure.utils.PDFWORDDialog
+import com.koinapistructure.utils.WordPDFListener
 import com.koinapistructure.utils.getCurrentDate
 import com.koinapistructure.utils.isConnected
 import com.koinapistructure.utils.toast
@@ -63,8 +71,10 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
     private lateinit var plusLogin: GoogleLogin
     private var mCurrentPhotoPath: String? = null
     private var uriTemp: Uri? = null
+    private var doctype: Int? = null
     private lateinit var mViewPager: BannerViewPager<ImageData?>
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -109,13 +119,17 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             galleryCameraPermission()
         }
 
+        binding.pdfWordButton.setOnClickListener {
+            pdfWordPermission()
+        }
+
         setUpAutoScrollViewPager(imageData())
 
         googleInit()
 
     }
 
-    fun googleInit() {
+    private fun googleInit() {
         plusLogin = GoogleLogin(this, null, this)
         plusLogin.mGoogleApiClient.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL)
     }
@@ -129,6 +143,8 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             plusLogin.onActivityResult(requestCode, resultCode, data!!)
         }
 
+
+        //Camera or Gallery
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 REQUEST_TAKE_PHOTO -> {
@@ -177,6 +193,49 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
 
             }
         }
+
+        when (requestCode) {
+
+            //Pdf or Word file
+            OPEN_DOCUMENT_REQUEST_CODE -> {
+
+                data?.data?.also { documentUri ->
+
+                    this.contentResolver.takePersistableUriPermission(
+                        documentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+
+
+                    var minSize = (6 * 1024 * 1024).toLong()
+
+                    if (getFileSize(documentUri)!! < minSize) {
+
+                        //  1 for word and 2 for pdf
+                        if (doctype == 1) {
+                            toast("It is a Document Type")
+                        } else {
+                            toast("It is a Pdf Type")
+                        }
+
+                        doctype = null
+
+                        //   if (documentUri.lastPathSegment?.equals())
+
+                        //       viewModel.hitUploadpdf(parentActivity.contentResolver, documentUri)
+
+
+                    } else {
+
+                        toast("Pdf size must be less than 6 mb")
+
+
+                    }
+                    //      viewModel.hitUploadpdf(parentActivity.contentResolver, documentUri)
+
+                }
+            }
+
+        }
     }
 
     override fun onGoogleProfileFetchComplete(
@@ -195,11 +254,12 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         plusLogin.signOut()
     }
 
-
     private fun setUpAutoScrollViewPager(bannerList: List<ImageData?>) {
 
         val indicatorview = DrawableIndicator(this@MainActivity)
-        indicatorview.setIndicatorDrawable(R.drawable.radio_selector, R.drawable.radio_selected_new)
+        indicatorview.setIndicatorDrawable(
+            R.drawable.radio_selector, R.drawable.radio_selected_new
+        )
         indicatorview.setIndicatorSize(20, 20, 20, 20)
         indicatorview.setIndicatorGap(20)
 
@@ -232,9 +292,10 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
     }
 
-    private fun galleryCameraPermission() {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun pdfWordPermission(){
         Dexter.withContext(this@MainActivity).withPermissions(
-            Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.READ_MEDIA_VIDEO,Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE
         ).withListener(object : MultiplePermissionsListener {
             override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
                 openPopUp()
@@ -248,7 +309,23 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         }).check()
     }
 
-    private fun openPopUp() {
+    private fun galleryCameraPermission() {
+        Dexter.withContext(this@MainActivity).withPermissions(
+            Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ).withListener(object : MultiplePermissionsListener {
+            override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
+                openPopUpImage()
+            }
+
+            override fun onPermissionRationaleShouldBeShown(
+                p0: MutableList<com.karumi.dexter.listener.PermissionRequest>?,
+                p1: PermissionToken?,
+            ) {
+            }
+        }).check()
+    }
+
+    private fun openPopUpImage() {
         CameraGalleryDialog(this@MainActivity, object : CameraGalleryListener {
             override fun onCameraClicked() {
                 takePicture()
@@ -263,6 +340,43 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
                 )
             }
         }).show()
+    }
+
+    private fun openPopUp() {
+        PDFWORDDialog(this,
+            object : WordPDFListener {
+
+                override fun onWORDClicked() {
+                    openDocumentPickerWORD()
+                    //  viewModel.logotype = 1
+                    doctype = 1
+                }
+
+                override fun onPDFClicked() {
+                    openDocumentPickerPDF()
+                    //  viewModel.logotype = 0
+                    doctype = 2
+                }
+            }).show()
+    }
+
+    private fun openDocumentPickerPDF() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            type = "application/pdf"
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+
+        doctype = 2
+        startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE)
+    }
+
+    private fun openDocumentPickerWORD() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            type = "application/msword"
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+        doctype = 1
+        startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE)
     }
 
     private fun takePicture() {
@@ -288,6 +402,15 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
             }
         }
+    }
+
+    private fun getFileSize(fileUri: Uri): Long? {
+        val returnCursor: Cursor? = this.getContentResolver().query(fileUri, null, null, null, null)
+        val sizeIndex: Int? = returnCursor?.getColumnIndex(OpenableColumns.SIZE)
+        returnCursor?.moveToFirst()
+        val size: Long? = sizeIndex?.let { returnCursor?.getLong(it) }
+        returnCursor?.close()
+        return size
     }
 
     @Throws(IOException::class)

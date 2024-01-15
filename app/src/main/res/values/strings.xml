@@ -7,4 +7,6 @@
     <string name="no">No</string>
     <string name="are_you_sure_you_want_to_logout">Are You Sure You Want To LogOut</string>
     <string name="pick_from">Pick from:</string>
+    <string name="word">WORD</string>
+    <string name="pdf">PDF</string>
 </resources>

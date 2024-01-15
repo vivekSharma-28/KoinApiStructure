@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="8dp"
+
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp">
+
+        <LinearLayout
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:minWidth="250dp"
+
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_word"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                android:gravity="center"
+                android:lines="1"
+                android:clickable="false"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:text="@string/word" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_pdf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                android:lines="1"
+                android:gravity="center"
+                android:clickable="false"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:text="@string/pdf" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

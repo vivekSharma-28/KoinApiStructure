@@ -53,17 +53,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Gallery Button"
-        app:layout_constraintBottom_toTopOf="@id/btLogout"
+        app:layout_constraintBottom_toTopOf="@id/pdf_word_Button"
         app:layout_constraintTop_toBottomOf="@id/confirm_button" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/pdf_word_Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PDF/Word Button"
+        app:layout_constraintBottom_toTopOf="@id/btLogout"
+        app:layout_constraintTop_toBottomOf="@id/gallery_Button" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btLogout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="LogOut"
+        app:layout_constraintTop_toBottomOf="@id/pdf_word_Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/gallery_Button" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
