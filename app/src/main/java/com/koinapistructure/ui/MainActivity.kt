@@ -62,7 +62,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener {
 
     lateinit var binding: ActivityMainBinding
@@ -71,11 +71,10 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
     private lateinit var plusLogin: GoogleLogin
     private var mCurrentPhotoPath: String? = null
     private var uriTemp: Uri? = null
-    private var doctype: Int? = null
+    private var docType: Int? = null
     private lateinit var smsVerifyCatcher: SmsVerifyCatcher
     private lateinit var mViewPager: BannerViewPager<ImageData?>
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -167,19 +166,17 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         plusLogin.mGoogleApiClient.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL)
     }
 
-    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         Log.e("RequestCode", requestCode.toString())
-        if (requestCode == GoogleLogin.RC_SIGN_IN) {
-            plusLogin.onActivityResult(requestCode, resultCode, data!!)
-        }
+        when (requestCode) {
 
+            //GoogleLogin
+            GoogleLogin.RC_SIGN_IN->plusLogin.onActivityResult(requestCode, resultCode, data!!)
 
-        //Camera or Gallery
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
+            //Camera or Gallery
+            Activity.RESULT_OK->when (requestCode) {
                 REQUEST_TAKE_PHOTO -> {
                     val f = File(mCurrentPhotoPath!!)
                     uriTemp = FileProvider.getUriForFile(
@@ -225,9 +222,6 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
                 else -> super.onActivityResult(requestCode, resultCode, data)
 
             }
-        }
-
-        when (requestCode) {
 
             //Pdf or Word file
             OPEN_DOCUMENT_REQUEST_CODE -> {
@@ -244,13 +238,13 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
                     if (getFileSize(documentUri)!! < minSize) {
 
                         //  1 for word and 2 for pdf
-                        if (doctype == 1) {
+                        if (docType == 1) {
                             toast("It is a Document Type")
                         } else {
                             toast("It is a Pdf Type")
                         }
 
-                        doctype = null
+                        docType = null
 
                         //   if (documentUri.lastPathSegment?.equals())
 
@@ -325,7 +319,6 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun pdfWordPermission() {
         Dexter.withContext(this@MainActivity).withPermissions(
             Manifest.permission.READ_MEDIA_VIDEO,
@@ -383,13 +376,13 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             override fun onWORDClicked() {
                 openDocumentPickerWORD()
                 //  viewModel.logotype = 1
-                doctype = 1
+                docType = 1
             }
 
             override fun onPDFClicked() {
                 openDocumentPickerPDF()
                 //  viewModel.logotype = 0
-                doctype = 2
+                docType = 2
             }
         }).show()
     }
@@ -400,7 +393,7 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             addCategory(Intent.CATEGORY_OPENABLE)
         }
 
-        doctype = 2
+        docType = 2
         startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE)
     }
 
@@ -409,7 +402,7 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             type = "application/msword"
             addCategory(Intent.CATEGORY_OPENABLE)
         }
-        doctype = 1
+        docType = 1
         startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE)
     }
 
@@ -447,7 +440,6 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         return size
     }
 
-    @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
