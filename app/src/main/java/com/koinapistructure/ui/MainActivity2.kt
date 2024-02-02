@@ -54,7 +54,7 @@ class MainActivity2 : AppCompatActivity() {
             android.R.layout.simple_list_item_1,
             stringsArray
         )
-        textView?.setText(applicationInfoList.size.toString() + " Apps are insalled")
+        textView?.setText(applicationInfoList.size.toString() + " Apps are installed")
     }
 
 
