@@ -106,6 +106,12 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             }
         }
 
+/*
+        binding.NextActivity.setOnClickListener {
+            startActivity(Intent(this@MainActivity,MainActivity2::class.java))
+        }
+*/
+
         binding.confirmButton.setOnClickListener {
             plusLogin.signIn()
         }
