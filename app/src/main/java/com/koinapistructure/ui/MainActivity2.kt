@@ -44,10 +44,8 @@ class MainActivity2 : AppCompatActivity() {
         val applicationInfoList =
             packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
         val stringsArray = arrayOfNulls<String>(applicationInfoList.size)
-        var i = 0
-        for (applicationInfo in applicationInfoList) {
+        for ((i, applicationInfo) in applicationInfoList.withIndex()) {
             stringsArray[i] = applicationInfo.packageName
-            i++
         }
         listView?.adapter = ArrayAdapter<String?>(
             this,
