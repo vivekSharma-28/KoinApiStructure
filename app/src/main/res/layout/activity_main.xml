@@ -83,7 +83,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_5sdp"
         android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@id/confirm_button"
+        app:layout_constraintBottom_toTopOf="@id/Next_Activity"
         app:layout_constraintEnd_toEndOf="@id/ccp_phoneLL"
         app:layout_constraintStart_toStartOf="@id/ccp_phoneLL"
         app:layout_constraintTop_toBottomOf="@id/ccp_phoneLL">
@@ -109,7 +109,6 @@
     </LinearLayout>
 
 
-<!--
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/Next_Activity"
         android:layout_width="match_parent"
@@ -117,7 +116,6 @@
         android:text="Move To Next Activity"
         app:layout_constraintBottom_toTopOf="@+id/confirm_button"
         app:layout_constraintTop_toBottomOf="@id/opt_LL" />
--->
 
 
     <androidx.appcompat.widget.AppCompatButton
@@ -126,7 +124,7 @@
         android:layout_height="wrap_content"
         android:text="Google Login"
         app:layout_constraintBottom_toTopOf="@+id/gallery_Button"
-        app:layout_constraintTop_toBottomOf="@id/opt_LL" />
+        app:layout_constraintTop_toBottomOf="@id/Next_Activity" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/gallery_Button"

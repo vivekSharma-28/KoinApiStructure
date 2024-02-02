@@ -2,7 +2,6 @@ package com.koinapistructure.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
@@ -16,26 +15,50 @@ import com.koinapistructure.utils.requestCommonPermission
 
 
 class MainActivity2 : AppCompatActivity() {
-
+/*
     lateinit var listView: ListView
     lateinit var text: TextView
-    lateinit var button: Button
+    lateinit var button: Button*/
 
+
+    private var textView: TextView? = null
+    private var listView: ListView? = null
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
 
-        listView = findViewById(R.id.listview)
+        textView = findViewById(R.id.textView);
+        listView = findViewById(R.id.listView);
+
+        /*listView = findViewById(R.id.listview)
         text = findViewById(R.id.totalapp)
         button=findViewById(R.id.check)
 
         requestCommonPermission(listOf(Manifest.permission.PACKAGE_USAGE_STATS))
 
-        button.setOnClickListener { getAllApps() }
+        button.setOnClickListener { getAllApps() }*/
     }
 
-    @Throws(PackageManager.NameNotFoundException::class)
+    fun buttonListApps(view: View?) {
+        val applicationInfoList =
+            packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+        val stringsArray = arrayOfNulls<String>(applicationInfoList.size)
+        var i = 0
+        for (applicationInfo in applicationInfoList) {
+            stringsArray[i] = applicationInfo.packageName
+            i++
+        }
+        listView?.adapter = ArrayAdapter<String?>(
+            this,
+            android.R.layout.simple_list_item_1,
+            stringsArray
+        )
+        textView?.setText(applicationInfoList.size.toString() + " Apps are insalled")
+    }
+
+
+   /* @Throws(PackageManager.NameNotFoundException::class)
     fun getAllApps() {
         val mainIntent = Intent(Intent.ACTION_MAIN, null)
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
@@ -66,6 +89,6 @@ class MainActivity2 : AppCompatActivity() {
         listView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, apps)
         // write total count of apps available.
         text.text = ril.size.toString() + " Apps are installed"
-    }
+    }*/
 
 }
