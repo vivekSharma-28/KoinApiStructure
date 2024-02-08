@@ -161,7 +161,7 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             /*val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"))
             startActivity(browserIntent)*/
 
-            downloadPdf(this,"https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+            downloadPdf(this,"https://link.testfile.org/PDF10MB",
                 generateFilename(),this,"Download Complete")
 
 

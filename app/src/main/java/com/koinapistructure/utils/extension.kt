@@ -3,6 +3,8 @@ package com.koinapistructure.utils
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DownloadManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -19,12 +21,15 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
+import com.koinapistructure.R
 import com.permissionx.guolindev.PermissionX
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -187,35 +192,78 @@ fun generateFilename(): String {
     return "pdf_$timestamp.pdf"
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 fun downloadPdf(context: Context, url: String, fileName: String, target: Any, message: String) {
+
     val request = DownloadManager.Request(Uri.parse(url))
-    request.setTitle("Downloading PDF")
-    request.setDescription("Please wait while the PDF is being downloaded...")
+    request.setTitle(fileName)
     request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED) // Set notification visibility
 
     val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
     val downloadId = downloadManager.enqueue(request)
 
     val onComplete = object : BroadcastReceiver() {
+        @SuppressLint("Range")
         override fun onReceive(context: Context, intent: Intent) {
             val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             if (id == downloadId) {
-                // Download completed, close the fragment or activity
-                if (target is Fragment) {
-                    target.parentFragmentManager.beginTransaction().remove(target).commit()
-                    toast(context, message)
-                } else if (target is Activity) {
-                    target.finish()
-                    toast(context, message)
+
+                val query = DownloadManager.Query().setFilterById(downloadId)
+                val cursor = downloadManager.query(query)
+                if (cursor.moveToFirst()) {
+                    val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                        // Download completed, close the fragment or activity
+                        if (target is Fragment) {
+                            target.parentFragmentManager.beginTransaction().remove(target).commit()
+                            toast(context, message)
+                        } else if (target is Activity) {
+                            target.finish()
+                            toast(context, message)
+                        }
+                    }
                 }
+                cursor.close()
             }
         }
     }
-    context.registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
-        Context.RECEIVER_EXPORTED)
-}
 
+    val onProgress = object : BroadcastReceiver() {
+        @SuppressLint("Range")
+        override fun onReceive(context: Context, intent: Intent) {
+            val query = DownloadManager.Query().setFilterById(downloadId)
+            val cursor = downloadManager.query(query)
+            if (cursor.moveToFirst()) {
+                val bytesDownloaded = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
+                val bytesTotal = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
+                val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+
+                if (status == DownloadManager.STATUS_RUNNING) {
+                    val remainingBytes = bytesTotal - bytesDownloaded
+                    val averageDownloadSpeed = 1.0 // Adjust as needed (e.g., average download speed in bytes per millisecond)
+                    val remainingTimeMillis = (remainingBytes / averageDownloadSpeed).toLong()
+
+                    val remainingTimeSeconds = remainingTimeMillis / 1000
+                    val minutes = remainingTimeSeconds / 60
+                    val seconds = remainingTimeSeconds % 60
+
+                    val remainingTimeString = String.format("%02d:%02d remaining", minutes, seconds)
+
+                    // Update the download description with remaining time
+                    request.setDescription(remainingTimeString)
+                    downloadManager.enqueue(request) // Re-enqueue the request to update the notification
+                }
+            }
+            cursor.close()
+        }
+    }
+
+    context.registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+        Context.RECEIVER_NOT_EXPORTED)
+    context.registerReceiver(onProgress, IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED),
+        Context.RECEIVER_NOT_EXPORTED)
+}
 
 fun distance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): String? {
     val theta = lon1 - lon2
