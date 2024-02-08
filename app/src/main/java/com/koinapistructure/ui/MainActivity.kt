@@ -1,12 +1,18 @@
 package com.koinapistructure.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
@@ -42,6 +48,8 @@ import com.koinapistructure.utils.LogoutDialog
 import com.koinapistructure.utils.NewYesNoListener
 import com.koinapistructure.utils.PDFWORDDialog
 import com.koinapistructure.utils.WordPDFListener
+import com.koinapistructure.utils.downloadPdf
+import com.koinapistructure.utils.generateFilename
 import com.koinapistructure.utils.getCurrentDate
 import com.koinapistructure.utils.isConnected
 import com.koinapistructure.utils.toast
@@ -62,6 +70,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener {
 
@@ -74,6 +83,8 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
     private var docType: Int? = null
     private lateinit var smsVerifyCatcher: SmsVerifyCatcher
     private lateinit var mViewPager: BannerViewPager<ImageData?>
+    var manager: DownloadManager? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,6 +154,17 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
                 EditorInfo.IME_ACTION_NEXT -> getData()
             }
             true
+        }
+
+        binding.pdfDownloadButton.setOnClickListener {
+
+            /*val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"))
+            startActivity(browserIntent)*/
+
+            downloadPdf(this,"https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+                generateFilename(),this,"Download Complete")
+
+
         }
 
         smsVerifyCatcher = SmsVerifyCatcher(this@MainActivity) { message ->
@@ -471,4 +493,5 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         super.onDestroy()
         smsVerifyCatcher.onStop()
     }
+
 }

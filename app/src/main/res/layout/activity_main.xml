@@ -139,8 +139,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="PDF/Word Button"
-        app:layout_constraintBottom_toTopOf="@id/btLogout"
+        app:layout_constraintBottom_toTopOf="@id/pdf_Download_Button"
         app:layout_constraintTop_toBottomOf="@id/gallery_Button" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/pdf_Download_Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PDF Download Button"
+        app:layout_constraintBottom_toTopOf="@id/btLogout"
+        app:layout_constraintTop_toBottomOf="@id/pdf_word_Button" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btLogout"
@@ -150,6 +158,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pdf_word_Button" />
+        app:layout_constraintTop_toBottomOf="@id/pdf_Download_Button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

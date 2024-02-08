@@ -2,14 +2,21 @@ package com.koinapistructure.utils
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.telephony.TelephonyManager
 import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.Fragment
@@ -172,6 +179,41 @@ fun Activity.snackbar(
 
 fun Context.toast(message: String) {
     Toast.makeText(this.applicationContext, message, Toast.LENGTH_SHORT).show()
+}
+
+fun generateFilename(): String {
+    val sdf = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+    val timestamp = sdf.format(Date())
+    return "pdf_$timestamp.pdf"
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun downloadPdf(context: Context, url: String, fileName: String, target: Any, message: String) {
+    val request = DownloadManager.Request(Uri.parse(url))
+    request.setTitle("Downloading PDF")
+    request.setDescription("Please wait while the PDF is being downloaded...")
+    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+
+    val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    val downloadId = downloadManager.enqueue(request)
+
+    val onComplete = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+            if (id == downloadId) {
+                // Download completed, close the fragment or activity
+                if (target is Fragment) {
+                    target.parentFragmentManager.beginTransaction().remove(target).commit()
+                    toast(context, message)
+                } else if (target is Activity) {
+                    target.finish()
+                    toast(context, message)
+                }
+            }
+        }
+    }
+    context.registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+        Context.RECEIVER_EXPORTED)
 }
 
 
