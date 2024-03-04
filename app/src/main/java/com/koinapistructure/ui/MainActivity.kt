@@ -1,14 +1,11 @@
 package com.koinapistructure.ui
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.DownloadManager
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -17,12 +14,18 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.inputmethod.EditorInfo
+import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Toast
+import android.widget.VideoView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.FFmpegKitConfig
+import com.arthenica.ffmpegkit.ReturnCode
 import com.braintechnosys.qickjob.utils.Loading
 import com.google.android.gms.common.api.GoogleApiClient
 import com.karumi.dexter.Dexter
@@ -49,7 +52,6 @@ import com.koinapistructure.utils.NewYesNoListener
 import com.koinapistructure.utils.PDFWORDDialog
 import com.koinapistructure.utils.WordPDFListener
 import com.koinapistructure.utils.downloadPdf
-import com.koinapistructure.utils.generateFilename
 import com.koinapistructure.utils.getCurrentDate
 import com.koinapistructure.utils.isConnected
 import com.koinapistructure.utils.toast
@@ -63,10 +65,16 @@ import id.zelory.compressor.Compressor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
+import xdroid.toaster.Toaster
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.Date
 import java.util.Locale
 
@@ -77,13 +85,14 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
     lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by inject()
     private val loading: Loading by inject()
+    private var customLogo: Bitmap? = null
     private lateinit var plusLogin: GoogleLogin
     private var mCurrentPhotoPath: String? = null
+    private var useDefaultLogo = true
     private var uriTemp: Uri? = null
     private var docType: Int? = null
     private lateinit var smsVerifyCatcher: SmsVerifyCatcher
     private lateinit var mViewPager: BannerViewPager<ImageData?>
-    var manager: DownloadManager? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -161,10 +170,14 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             /*val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"))
             startActivity(browserIntent)*/
 
-            downloadPdf(this,"https://link.testfile.org/PDF10MB",
-                generateFilename(),this,"Download Complete")
+            downloadPdf(this,"https://link.testfile.org/PDF10MB", this)
 
 
+        }
+
+        binding.watermark.setOnClickListener {
+            val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+            startActivityForResult(intent, 1)
         }
 
         smsVerifyCatcher = SmsVerifyCatcher(this@MainActivity) { message ->
@@ -198,6 +211,28 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
 
         Log.e("RequestCode", requestCode.toString())
         when (requestCode) {
+
+            1->{
+                data?.data?.let { it1 ->
+                    runBlocking {
+                        //Run converting process in a new thread as rendering is intense process for main thread
+                        withContext(newSingleThreadContext("Converting"))
+                        {
+
+                            println("MainActivity.onActivityResult:::::${it1.path}")
+                            addWatermarkVideo(it1)
+
+                            /*//Check again for external storage permission if android API >= 30
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                if (Environment.isExternalStorageManager()) {
+                                    addWatermarkVideo(it1)
+                                }
+                            } else {
+                            }*/
+                        }
+                    }
+                }
+            }
 
             //GoogleLogin
             GoogleLogin.RC_SIGN_IN->plusLogin.onActivityResult(requestCode, resultCode, data!!)
@@ -290,6 +325,91 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             }
 
         }
+    }
+
+    //Add the Logo to the video then save the new video to local storage in device
+    private suspend fun addWatermarkVideo(videoUri: Uri) {
+        //Get the path of the video needed to be edited
+        val videoPath = FFmpegKitConfig.getSafParameterForRead(this.applicationContext, videoUri)
+        //Path of default app logo
+
+
+        var logoPath = withContext(Dispatchers.IO) {
+            val bitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_login_logo)
+            val file = File(this@MainActivity.cacheDir, "logo.png")
+            file.createNewFile()
+            val outputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            outputStream.flush()
+            outputStream.close()
+            file
+        }
+        //Get current time to make unique name to the video that will be saved
+        var now = LocalDateTime.now().toString()
+        //Replace ':' in date as FFmpeg library can't deal with it
+        now = now.replace(':', '+')
+        //Extract the default logo to external directory in device to be used be FFmpeg library
+        extractLogo()
+        //Command that will be executed by FFmpeg library to add the Watermark , animate it
+        // and save the video to external storage in the device
+        val command =
+            "-i $videoPath -i $logoPath -filter_complex  \"[1]colorchannelmixer = aa =0.8, scale = iw*0.2:-1[a];[0][a] overlay = x ='if(lt(mod(t\\,24)\\,12)\\,W-w-W*10/100\\,W*10/100)':y = 'if(lt(mod(t+6\\,24)\\,12)\\,H-h-H*5/100\\,H*5/100)'\" /storage/emulated/0/DCIM/Camera/LogoAdder$now.mp4"
+        try {
+            //Switch to IO thread as we will save a video to storage
+            withContext(Dispatchers.IO) {
+                Toaster.toastLong("Please wait while saving video :>")
+
+
+                //Execute the command
+                FFmpegKit.executeAsync(command) {
+                    //Tell user if process is done successfully or not
+                    if (ReturnCode.isSuccess(it.returnCode)) {
+                        Toaster.toast("Video Saved Successfully :)")
+                    } else {
+                        Toaster.toast("Error happened while saving !")
+                    }
+                    //Return to main thread to call the Clear function
+                    runOnUiThread(kotlinx.coroutines.Runnable {
+                        kotlin.run {
+                            clearSelection()
+                        }
+                    })
+                }
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            Toast.makeText(
+                this.applicationContext,
+                "Error in Convert Execution !",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+
+    }
+
+    private fun extractLogo() {
+        val bm = BitmapFactory.decodeResource(resources, R.drawable.logo)
+        val extStorageDirectory = "/storage/emulated/0/LogoAdder"
+        File(extStorageDirectory).mkdir()
+        val file = File(extStorageDirectory, "logo.png")
+        if (!file.exists()) {
+            try {
+                val outStream = FileOutputStream(file)
+                bm.compress(Bitmap.CompressFormat.PNG, 100, outStream)
+                outStream.flush()
+                outStream.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toaster.toast("Error while loading the logo !")
+            }
+        }
+    }
+
+
+    private fun clearSelection() {
+        customLogo = null
+        useDefaultLogo = true
     }
 
     override fun onGoogleProfileFetchComplete(

@@ -4,13 +4,11 @@ buildscript{
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://jitpack.io") }
     }
 
     dependencies{
-        classpath ("org.jetbrains.kotlin:kotlin-serialization:1.8.10")
-        classpath("com.google.gms:google-services:4.4.0")
-
+        classpath ("org.jetbrains.kotlin:kotlin-serialization:1.9.0")
+        classpath("com.google.gms:google-services:4.4.1")
     }
 }
 

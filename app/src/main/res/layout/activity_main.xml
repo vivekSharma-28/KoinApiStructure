@@ -147,8 +147,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="PDF Download Button"
-        app:layout_constraintBottom_toTopOf="@id/btLogout"
+        app:layout_constraintBottom_toTopOf="@id/watermark"
         app:layout_constraintTop_toBottomOf="@id/pdf_word_Button" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/watermark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Video With WaterMark"
+        app:layout_constraintBottom_toTopOf="@id/btLogout"
+        app:layout_constraintTop_toBottomOf="@id/pdf_Download_Button" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btLogout"
@@ -158,6 +166,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pdf_Download_Button" />
+        app:layout_constraintTop_toBottomOf="@id/watermark" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

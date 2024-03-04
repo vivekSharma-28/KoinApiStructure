@@ -193,11 +193,11 @@ fun generateFilename(): String {
 }
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-fun downloadPdf(context: Context, url: String, fileName: String, target: Any, message: String) {
+fun downloadPdf(context: Context,url: String, target: Any, message: String="Download Complete") {
 
     val request = DownloadManager.Request(Uri.parse(url))
-    request.setTitle(fileName)
-    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+    request.setTitle(generateFilename())
+    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, generateFilename())
     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED) // Set notification visibility
 
     val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
@@ -217,10 +217,10 @@ fun downloadPdf(context: Context, url: String, fileName: String, target: Any, me
                         // Download completed, close the fragment or activity
                         if (target is Fragment) {
                             target.parentFragmentManager.beginTransaction().remove(target).commit()
-                            toast(context, message)
+                            toast(target.requireContext(), message)
                         } else if (target is Activity) {
                             target.finish()
-                            toast(context, message)
+                            toast(target, message)
                         }
                     }
                 }
