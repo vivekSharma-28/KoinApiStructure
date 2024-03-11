@@ -36,8 +36,10 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import java.util.regex.Pattern
 import kotlin.math.acos
 import kotlin.math.cos
@@ -346,6 +348,48 @@ fun loadImageURL(imageView: AppCompatImageView, imageURL: String) {
 fun getCountryCode(context: Context): String {
     val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
     return tm.networkCountryIso
+}
+
+
+@SuppressLint("NewApi")
+@RequiresApi(Build.VERSION_CODES.N)
+fun convertTimeFromFormat(item:String):String{
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSX", Locale.US)
+    inputFormat.timeZone = TimeZone.getTimeZone("UTC") // Input is in UTC
+
+    val outputFormat = SimpleDateFormat("HH:mm a", Locale.US)
+    outputFormat.timeZone = TimeZone.getTimeZone(TimeZone.getDefault().id) // Convert to device's local time zone
+
+    val inputDate = inputFormat.parse(item)//"2024-03-11T05:41:41.000000Z"
+    val outputDate = outputFormat.format(inputDate)
+
+
+    return outputDate
+}
+
+fun returnConvertedTimeFromString(originalTime: String): String {
+
+    val originalTime = originalTime  //"11:11 AM"
+
+    // Get the device's current time zone
+    val deviceTimeZoneId = TimeZone.getDefault().id
+
+    // Format for parsing the original time
+    val originalFormat = SimpleDateFormat("hh:mm a", Locale.US)
+
+    // Parse the original time
+    val parsedTime = originalFormat.parse(originalTime)
+
+    // Set the time zone for the parsed time
+    val cal = Calendar.getInstance()
+    cal.time = parsedTime
+    cal.timeZone = TimeZone.getTimeZone(deviceTimeZoneId)
+
+    // Format the converted time
+    val targetFormat = SimpleDateFormat("hh:mm a", Locale.US)
+    targetFormat.timeZone = TimeZone.getTimeZone(deviceTimeZoneId)
+
+    return targetFormat.format(cal.time)
 }
 
 fun convertFormFileToMultipartBody(key: String, file: File?): MultipartBody.Part? = file?.let {
