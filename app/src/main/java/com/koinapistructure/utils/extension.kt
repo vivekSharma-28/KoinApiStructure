@@ -360,7 +360,7 @@ fun convertTimeFromFormat(item:String):String{
     val outputFormat = SimpleDateFormat("HH:mm a", Locale.US)
     outputFormat.timeZone = TimeZone.getTimeZone(TimeZone.getDefault().id) // Convert to device's local time zone
 
-    val inputDate = inputFormat.parse(item)//"2024-03-11T05:41:41.000000Z"
+    val inputDate = inputFormat.parse(item)//item= "2024-03-11T05:41:41.000000Z"
     val outputDate = outputFormat.format(inputDate)
 
 

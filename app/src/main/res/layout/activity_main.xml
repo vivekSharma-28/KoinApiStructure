@@ -1,171 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:fillViewport="true"
     tools:context=".ui.MainActivity">
 
-    <LinearLayout
-        android:id="@+id/layout"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="@dimen/_5sdp"
-        android:orientation="vertical"
-        android:weightSum="3"
-        app:layout_constraintBottom_toTopOf="@id/ccp_phoneLL"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/products"
+        <LinearLayout
+            android:id="@+id/layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <com.zhpan.bannerview.BannerViewPager
-            android:id="@+id/viewpager_home"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ccp_phoneLL"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_5sdp"
-        app:layout_constraintBottom_toTopOf="@id/opt_LL"
-        app:layout_constraintEnd_toEndOf="@+id/layout"
-        app:layout_constraintStart_toStartOf="@+id/layout"
-        app:layout_constraintTop_toBottomOf="@id/layout">
-
-        <com.ak.ui.CountryCodePicker
-            android:id="@+id/ccp_phone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            app:arrowSize="@dimen/_20sdp"
-            app:contentColor="@color/black"
-            app:defaultNameCode="in"
-            app:excludedCountries="ad,ae"
-            app:fontFamily="@font/montserrat_medium"
-            app:showArrowDown="true"
-            app:showFlag="true"
-            app:showNameCode="false"
-            app:textSize="@dimen/_12ssp" />
-
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/phone_Number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:singleLine="true"
+            android:layout_height="0dp"
             android:layout_margin="@dimen/_5sdp"
-            android:inputType="number" />
+            android:orientation="vertical"
+            android:weightSum="3"
+            app:layout_constraintBottom_toTopOf="@id/ccp_phoneLL"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    </LinearLayout>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/products"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
-    <LinearLayout
-        android:id="@+id/opt_LL"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_5sdp"
-        android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@id/Next_Activity"
-        app:layout_constraintEnd_toEndOf="@id/ccp_phoneLL"
-        app:layout_constraintStart_toStartOf="@id/ccp_phoneLL"
-        app:layout_constraintTop_toBottomOf="@id/ccp_phoneLL">
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
-        <com.poovam.pinedittextfield.LinePinField
-            android:id="@+id/otp_Field"
-            android:layout_width="wrap_content"
+            <com.zhpan.bannerview.BannerViewPager
+                android:id="@+id/viewpager_home"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ccp_phoneLL"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:inputType="number"
-            android:textSelectHandle="@drawable/text_handle"
-            android:textSize="16sp"
-            app:bottomTextPaddingDp="15dp"
-            app:distanceInBetween="10dp"
-            app:fieldColor="#D50000"
-            app:highlightColor="#43A047"
-            app:highlightType="allFields"
-            app:isCursorEnabled="true"
-            app:isCustomBackground="true"
-            app:lineThickness="2dp"
-            app:noOfFields="6" />
+            android:layout_margin="@dimen/_5sdp"
+            app:layout_constraintBottom_toTopOf="@id/opt_LL"
+            app:layout_constraintEnd_toEndOf="@+id/layout"
+            app:layout_constraintStart_toStartOf="@+id/layout"
+            app:layout_constraintTop_toBottomOf="@id/layout">
 
-    </LinearLayout>
+            <com.ak.ui.CountryCodePicker
+                android:id="@+id/ccp_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                app:arrowSize="@dimen/_20sdp"
+                app:contentColor="@color/black"
+                app:defaultNameCode="in"
+                app:excludedCountries="ad,ae"
+                app:fontFamily="@font/montserrat_medium"
+                app:showArrowDown="true"
+                app:showFlag="true"
+                app:showNameCode="false"
+                app:textSize="@dimen/_12ssp" />
 
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/phone_Number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/_5sdp"
+                android:inputType="number"
+                android:singleLine="true" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/Next_Activity"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Move To Next Activity"
-        app:layout_constraintBottom_toTopOf="@+id/confirm_button"
-        app:layout_constraintTop_toBottomOf="@id/opt_LL" />
+        </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/opt_LL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_5sdp"
+            android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@id/Next_Activity"
+            app:layout_constraintEnd_toEndOf="@id/ccp_phoneLL"
+            app:layout_constraintStart_toStartOf="@id/ccp_phoneLL"
+            app:layout_constraintTop_toBottomOf="@id/ccp_phoneLL">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/confirm_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Google Login"
-        app:layout_constraintBottom_toTopOf="@+id/gallery_Button"
-        app:layout_constraintTop_toBottomOf="@id/Next_Activity" />
+            <com.poovam.pinedittextfield.LinePinField
+                android:id="@+id/otp_Field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:inputType="number"
+                android:textSelectHandle="@drawable/text_handle"
+                android:textSize="16sp"
+                app:bottomTextPaddingDp="15dp"
+                app:distanceInBetween="10dp"
+                app:fieldColor="#D50000"
+                app:highlightColor="#43A047"
+                app:highlightType="allFields"
+                app:isCursorEnabled="true"
+                app:isCustomBackground="true"
+                app:lineThickness="2dp"
+                app:noOfFields="6" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/gallery_Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Gallery Button"
-        app:layout_constraintBottom_toTopOf="@id/pdf_word_Button"
-        app:layout_constraintTop_toBottomOf="@id/confirm_button" />
+        </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/pdf_word_Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="PDF/Word Button"
-        app:layout_constraintBottom_toTopOf="@id/pdf_Download_Button"
-        app:layout_constraintTop_toBottomOf="@id/gallery_Button" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/Next_Activity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Move To Next Activity"
+            app:layout_constraintBottom_toTopOf="@+id/confirm_button"
+            app:layout_constraintTop_toBottomOf="@id/opt_LL" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/pdf_Download_Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="PDF Download Button"
-        app:layout_constraintBottom_toTopOf="@id/watermark"
-        app:layout_constraintTop_toBottomOf="@id/pdf_word_Button" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/confirm_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Google Login"
+            app:layout_constraintBottom_toTopOf="@+id/gallery_Button"
+            app:layout_constraintTop_toBottomOf="@id/Next_Activity" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/watermark"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Video With WaterMark"
-        app:layout_constraintBottom_toTopOf="@id/btLogout"
-        app:layout_constraintTop_toBottomOf="@id/pdf_Download_Button" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/gallery_Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gallery Button"
+            app:layout_constraintBottom_toTopOf="@id/pdf_word_Button"
+            app:layout_constraintTop_toBottomOf="@id/confirm_button" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btLogout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="LogOut"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/watermark" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/pdf_word_Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PDF/Word Button"
+            app:layout_constraintBottom_toTopOf="@id/pdf_Download_Button"
+            app:layout_constraintTop_toBottomOf="@id/gallery_Button" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/pdf_Download_Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PDF Download Button"
+            app:layout_constraintBottom_toTopOf="@id/youtubePlayer"
+            app:layout_constraintTop_toBottomOf="@id/pdf_word_Button" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/youtubePlayer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Youtube Video Player"
+            app:layout_constraintBottom_toTopOf="@id/watermark"
+            app:layout_constraintTop_toBottomOf="@id/pdf_Download_Button" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/watermark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Video With WaterMark"
+            app:layout_constraintBottom_toTopOf="@id/btLogout"
+            app:layout_constraintTop_toBottomOf="@id/youtubePlayer" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LogOut"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/watermark" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

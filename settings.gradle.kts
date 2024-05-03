@@ -4,6 +4,9 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
         maven { url = uri("https://jitpack.io") }
+        maven{
+            url=uri("https://sdk.uxcam.com/android/")
+        }
 
     }
 }
@@ -13,7 +16,9 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url = uri("https://jitpack.io") }
-
+        maven{
+            url=uri("https://sdk.uxcam.com/android/")
+        }
     }
 }
 

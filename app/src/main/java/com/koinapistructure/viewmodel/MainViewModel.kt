@@ -18,11 +18,11 @@ class MainViewModel(private val repository: ApiRepository) : ViewModel() {
         get() = mutableLiveData
 
 
-//    fun getData() = viewModelScope.launch {
-//        repository.getData().collect {
-//            mutableLiveData.value = it
-//        }
-//    }
+    /*fun getData() = viewModelScope.launch {
+        repository.getData().collect {
+            mutableLiveData.value = it
+        }
+    }*/
 
     fun product(request: Request)=viewModelScope.launch {
         repository.getProduct(request).collect{

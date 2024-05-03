@@ -53,6 +53,7 @@ import com.koinapistructure.utils.PDFWORDDialog
 import com.koinapistructure.utils.WordPDFListener
 import com.koinapistructure.utils.downloadPdf
 import com.koinapistructure.utils.getCurrentDate
+import com.koinapistructure.utils.hideKeyboard
 import com.koinapistructure.utils.isConnected
 import com.koinapistructure.utils.toast
 import com.koinapistructure.viewmodel.MainViewModel
@@ -135,6 +136,11 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             plusLogin.signIn()
         }
 
+        binding.youtubePlayer.setOnClickListener {
+            toast("Work In Progress")
+            startActivity(Intent(this@MainActivity,MainActivity3::class.java))
+        }
+
         binding.btLogout.setOnClickListener {
             LogoutDialog(this, object : NewYesNoListener {
                 override fun onAffirmative() {
@@ -151,16 +157,22 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             pdfWordPermission()
         }
 
-        binding.otpField.setOnEditorActionListener { v, actionId, event ->
+        binding.otpField.setOnEditorActionListener { _, actionId, event ->
             when (actionId) {
-                EditorInfo.IME_ACTION_DONE -> otpData()
+                EditorInfo.IME_ACTION_DONE -> {
+                    hideKeyboard()
+                    otpData()
+                }
             }
             true
         }
 
         binding.phoneNumber.setOnEditorActionListener { v, actionId, event ->
             when (actionId) {
-                EditorInfo.IME_ACTION_NEXT -> getData()
+                EditorInfo.IME_ACTION_NEXT -> {
+                    hideKeyboard()
+                    getData()
+                }
             }
             true
         }
@@ -193,12 +205,20 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
     private fun getData() {
         val code = binding.ccpPhone.selectedCountryCode()
         val phoneNumber = binding.phoneNumber.text.toString()
-        toast(code + phoneNumber)
+        if(phoneNumber.isNullOrEmpty())
+            toast("Please Fill The Correct Number")
+        else
+            binding.phoneNumber.setText("")
+            toast(code + phoneNumber)
     }
 
     private fun otpData() {
         val otp = binding.otpField.text.toString()
-        toast("This is the OTP $otp")
+        if(otp.length<6)
+            toast("Please Fill The Complete Otp")
+        else
+            binding.otpField.setText("")
+            toast("This is the OTP $otp")
     }
 
     private fun googleInit() {
