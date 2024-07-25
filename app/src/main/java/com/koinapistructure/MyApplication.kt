@@ -1,6 +1,9 @@
 package com.koinapistructure
 
 import android.app.Application
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
+import android.preference.PreferenceManager
 import com.koinapistructure.di.ApiModule
 import com.koinapistructure.di.RepoModule
 import com.koinapistructure.di.ViewModelModule

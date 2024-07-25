@@ -8,6 +8,7 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.Window
 import android.widget.Toast
+import com.koinapistructure.MyApplication
 import com.koinapistructure.R
 import com.koinapistructure.databinding.LogoutBinding
 
@@ -43,10 +44,8 @@ class LogoutDialog(context: Context, var listner: NewYesNoListener) : Dialog(con
     }
 }
 
-
 fun isConnected(mContext: Context): Boolean {
-    val connectivityManager =
-        mContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val connectivityManager = mContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     val netInfo = connectivityManager.activeNetworkInfo
     return netInfo != null && netInfo.isConnected
 }

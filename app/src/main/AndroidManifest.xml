@@ -11,9 +11,11 @@
 
     <uses-permission android:name = "android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name = "android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name = "android.permission.CHANGE_WIFI_STATE" />
-
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
@@ -29,6 +31,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -40,6 +44,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KoinApiStructure"
         tools:targetApi="31">
+
         <activity
             android:name=".ui.MainActivity3"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize"

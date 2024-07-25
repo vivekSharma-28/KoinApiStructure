@@ -1,17 +1,23 @@
 package com.koinapistructure.ui
 
-import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AppOpsManager
+import android.app.usage.UsageEvents
+import android.app.usage.UsageStats
+import android.app.usage.UsageStatsManager
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Process
+import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.koinapistructure.R
-import com.koinapistructure.utils.requestCommonPermission
 
 
 class MainActivity2 : AppCompatActivity() {
@@ -31,62 +37,73 @@ class MainActivity2 : AppCompatActivity() {
         textView = findViewById(R.id.textView);
         listView = findViewById(R.id.listView);
 
-        /*listView = findViewById(R.id.listview)
-        text = findViewById(R.id.totalapp)
-        button=findViewById(R.id.check)
-
-        requestCommonPermission(listOf(Manifest.permission.PACKAGE_USAGE_STATS))
-
-        button.setOnClickListener { getAllApps() }*/
+        if (!hasUsageStatsPermission()) {
+            requestUsageStatsPermission();
+        } else {
+            updateUsageStats()
+        }
     }
 
-    fun buttonListApps(view: View?) {
-        val applicationInfoList =
-            packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-        val stringsArray = arrayOfNulls<String>(applicationInfoList.size)
-        for ((i, applicationInfo) in applicationInfoList.withIndex()) {
-            stringsArray[i] = applicationInfo.packageName
-        }
-        listView?.adapter = ArrayAdapter<String?>(
-            this,
-            android.R.layout.simple_list_item_1,
-            stringsArray
+    private fun hasUsageStatsPermission(): Boolean {
+        val appOps = getSystemService(APP_OPS_SERVICE) as AppOpsManager
+        val mode = appOps.checkOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            Process.myUid(),
+            packageName
         )
-        textView?.setText(applicationInfoList.size.toString() + " Apps are installed")
+        return mode == AppOpsManager.MODE_ALLOWED
     }
 
+    private fun requestUsageStatsPermission() {
+        val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+        startActivity(intent)
+    }
 
-   /* @Throws(PackageManager.NameNotFoundException::class)
-    fun getAllApps() {
-        val mainIntent = Intent(Intent.ACTION_MAIN, null)
-        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+    fun updateUsageStats() {
+        val usageStatsMap = getAppUsageStats(this)
+        val packageManager = packageManager
+        val stringBuilder = StringBuilder()
 
-        // get list of all the apps installed
-        val ril = packageManager.queryIntentActivities(mainIntent, 0)
-        val componentList: List<String> = ArrayList()
-        lateinit var name: String
-        var i = 0
+        println("MainActivity2.updateUsageStats:::::usageStatsMap size: ${usageStatsMap.size}")
 
-        // get size of ril and create a list
-        val apps = arrayOfNulls<String>(ril.size)
-        for (ri in ril) {
-            if (ri.activityInfo != null) {
-                // get package
-                val res = packageManager.getResourcesForApplication(ri.activityInfo.applicationInfo)
-                // if activity label res is found
-                name = if (ri.activityInfo.labelRes != 0) {
-                    res.getString(ri.activityInfo.labelRes)
-                } else {
-                    ri.activityInfo.applicationInfo.loadLabel(packageManager).toString()
-                }
-                apps[i] = name
-                i++
+        for ((packageName, aggregatedStats) in usageStatsMap) {
+            val totalUsageTime = aggregatedStats.totalTimeInForeground / 1000 // in seconds
+            if (totalUsageTime == 0L) continue
+
+            // Get app name and icon
+            val appInfo = try {
+                packageManager.getApplicationInfo(packageName, 0)
+            } catch (e: PackageManager.NameNotFoundException) {
+                println("MainActivity2.updateUsageStats:::::PackageManager.NameNotFoundException for package: $packageName")
+                continue
             }
+
+            val appName = packageManager.getApplicationLabel(appInfo).toString()
+            val appIcon = packageManager.getApplicationIcon(appInfo)
+
+            // Log each package's data
+            println("MainActivity2.updateUsageStats:::::Processing $appName : $totalUsageTime secs")
+
+            // For demonstration purposes, we're just appending the app name to the string.
+            // You can use the appIcon drawable as needed in your UI.
+            stringBuilder.append("$appName : $totalUsageTime secs\n\n")
         }
-        // set all the apps name in list view
-        listView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, apps)
-        // write total count of apps available.
-        text.text = ril.size.toString() + " Apps are installed"
-    }*/
+
+        println("MainActivity2.updateUsageStats:::::Final StringBuilder Output:\n$stringBuilder")
+    }
+
+    private fun getAppUsageStats(context: Context): Map<String, UsageStats> {
+        // Example implementation of getAppUsageStats
+        val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+        val endTime = System.currentTimeMillis()
+        val startTime = endTime - (1000 * 60 * 60 * 24) // last 24 hours
+        val usageStatsList = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startTime, endTime)
+        val usageStatsMap = mutableMapOf<String, UsageStats>()
+        for (usageStats in usageStatsList) {
+            usageStatsMap[usageStats.packageName] = usageStats
+        }
+        return usageStatsMap
+    }
+
 
 }

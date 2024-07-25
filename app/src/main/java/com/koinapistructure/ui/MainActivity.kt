@@ -1,7 +1,10 @@
 package com.koinapistructure.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
@@ -9,15 +12,11 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.inputmethod.EditorInfo
-import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.Toast
-import android.widget.VideoView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
@@ -38,6 +37,7 @@ import com.koinapistructure.adapter.HomeViewPagerAdapter
 import com.koinapistructure.databinding.ActivityMainBinding
 import com.koinapistructure.response.ImageData
 import com.koinapistructure.social_sign_in.GoogleLogin
+import com.koinapistructure.ui.BatteryOptimizationHelper.requestIgnoreBatteryOptimizations
 import com.koinapistructure.utils.CameraGalleryDialog
 import com.koinapistructure.utils.CameraGalleryListener
 import com.koinapistructure.utils.Constant.OPEN_DOCUMENT_REQUEST_CODE
@@ -80,6 +80,7 @@ import java.util.Date
 import java.util.Locale
 
 
+@SuppressLint("SuspiciousIndentation")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener {
 
@@ -94,7 +95,6 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
     private var docType: Int? = null
     private lateinit var smsVerifyCatcher: SmsVerifyCatcher
     private lateinit var mViewPager: BannerViewPager<ImageData?>
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -192,6 +192,10 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             startActivityForResult(intent, 1)
         }
 
+        binding.abc.setOnClickListener {
+            Abc()
+        }
+
         smsVerifyCatcher = SmsVerifyCatcher(this@MainActivity) { message ->
             toast("This is the code $message")
         }
@@ -232,6 +236,7 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         Log.e("RequestCode", requestCode.toString())
         when (requestCode) {
 
+            //WaterMark Video
             1->{
                 data?.data?.let { it1 ->
                     runBlocking {
@@ -372,8 +377,7 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         extractLogo()
         //Command that will be executed by FFmpeg library to add the Watermark , animate it
         // and save the video to external storage in the device
-        val command =
-            "-i $videoPath -i $logoPath -filter_complex  \"[1]colorchannelmixer = aa =0.8, scale = iw*0.2:-1[a];[0][a] overlay = x ='if(lt(mod(t\\,24)\\,12)\\,W-w-W*10/100\\,W*10/100)':y = 'if(lt(mod(t+6\\,24)\\,12)\\,H-h-H*5/100\\,H*5/100)'\" /storage/emulated/0/DCIM/Camera/LogoAdder$now.mp4"
+        val command = "-i $videoPath -i $logoPath -filter_complex  \"[1]colorchannelmixer = aa =0.8, scale = iw*0.2:-1[a];[0][a] overlay = x ='if(lt(mod(t\\,24)\\,12)\\,W-w-W*10/100\\,W*10/100)':y = 'if(lt(mod(t+6\\,24)\\,12)\\,H-h-H*5/100\\,H*5/100)'\" /storage/emulated/0/DCIM/Camera/LogoAdder$now.mp4"
         try {
             //Switch to IO thread as we will save a video to storage
             withContext(Dispatchers.IO) {
@@ -384,9 +388,9 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
                 FFmpegKit.executeAsync(command) {
                     //Tell user if process is done successfully or not
                     if (ReturnCode.isSuccess(it.returnCode)) {
-                        Toaster.toast("Video Saved Successfully :)")
+                        toast("Video Saved Successfully :)")
                     } else {
-                        Toaster.toast("Error happened while saving !")
+                        toast("Error happened while saving !")
                     }
                     //Return to main thread to call the Clear function
                     runOnUiThread(kotlinx.coroutines.Runnable {
@@ -398,11 +402,7 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
-            Toast.makeText(
-                this.applicationContext,
-                "Error in Convert Execution !",
-                Toast.LENGTH_SHORT
-            ).show()
+            toast("Error in Convert Execution !")
         }
 
 
@@ -421,7 +421,7 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
                 outStream.close()
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toaster.toast("Error while loading the logo !")
+                toast("Error while loading the logo !")
             }
         }
     }
@@ -622,6 +622,22 @@ class MainActivity : AppCompatActivity(), GoogleLogin.OnClientConnectedListener 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.absolutePath
         return image
+    }
+
+    private fun Abc(){
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Battery Optimization")
+            .setMessage("To ensure you receive all notifications, please allow the app to ignore battery optimizations. This will prevent the system from stopping our background services.")
+            .setPositiveButton("OK"
+            ) { dialog, id ->
+                if (!BatteryOptimizationHelper.isIgnoringBatteryOptimizations(this)) {
+                    requestIgnoreBatteryOptimizations(this);
+                }
+            }
+            .setNegativeButton("Cancel"
+            ) { dialog, id -> dialog.dismiss() }
+            .create()
+            .show()
     }
 
     override fun onStart() {
